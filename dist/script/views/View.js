@@ -1,6 +1,9 @@
 export default class View {
   _data;
   render(data) {
+    if (!data || (Array.isArray(data) && data.length === 0))
+      return this.renderError('No Recipes Found!');
+
     this._data = data;
     const markup = this._generateMarkup();
     this._clear();
@@ -15,7 +18,7 @@ export default class View {
     const markup = `
       <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     `;
-    this._parentElement.innerHTML = ' ';
+    this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
@@ -26,6 +29,8 @@ export default class View {
         <h style="font-family: 'Montserrat', sans-serif;">${message}</h>
       </div>
     `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
   addHandlerRender(handler) {

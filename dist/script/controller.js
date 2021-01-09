@@ -12,9 +12,11 @@ const controlInitialState = async function () {
     const sideCardBtn = document.querySelectorAll('.cat__card');
     const sideEle = Array('pizza', 'ice creame', 'burger', 'barbeque');
     for (let i = 0; i < sideCardBtn.length; i++) {
-      sideCardBtn[i].addEventListener('click', function () {
+      sideCardBtn[i].addEventListener('click', async function () {
+        console.log(sideCardBtn);
         //Load Recipe
-        model.loadSearchResults(sideEle[i]);
+        await model.loadSearchResults(sideEle[i]);
+        resultsView.render(model.state.search.results);
         let curActive = document.getElementsByClassName('card_active');
         curActive[0].className = curActive[0].className.replace(
           ' card_active',
@@ -26,7 +28,8 @@ const controlInitialState = async function () {
   } catch (err) {
     console.log(err);
   }
-  model.loadSearchResults('pizza');
+  await model.loadSearchResults('pizza');
+  resultsView.render(model.state.search.results);
 };
 
 const controlFullRecipe = async function () {
@@ -41,7 +44,7 @@ const controlFullRecipe = async function () {
     //2. render recipe
     recipeView.render(model.state.recipe);
   } catch (err) {
-    console.log(err);
+    recipeView.renderError(`Recipe not found. Please try another one!`);
   }
 };
 
@@ -50,8 +53,12 @@ const controlSearchResults = async () => {
     resultsView.renderSpinner();
     // 1) Get search query
     const query = searchView.getQuery();
+    if (!query) return;
     // 2) Load search results
     await model.loadSearchResults(query);
+    //3) Render results
+    console.log(model.state.search.results);
+    resultsView.render(model.state.search.results);
   } catch (err) {
     console.log(err);
   }

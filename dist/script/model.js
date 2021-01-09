@@ -5,6 +5,10 @@ import { getJSON } from './helper';
 
 export const state = {
   recipe: {},
+  search: {
+    query: '',
+    results: [],
+  },
 };
 
 export const loadFullRecipe = async function (id) {
@@ -24,30 +28,38 @@ export const loadFullRecipe = async function (id) {
       ingredients: recipe.ingredients,
     };
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 };
 
 export const loadSearchResults = async function (query) {
   try {
-    const res = await fetch(`${API_URL}?search=${query}&key=${KEY}`);
-    const data = await res.json();
+    state.search.query = query;
+    const data = await getJSON(`${API_URL}?search=${query}&key=${KEY}`);
 
-    const recContainer = document.querySelector('#recipe__content');
-
-    data.data.recipes.splice(0, 9).map((el) => {
-      recContainer.insertAdjacentHTML(
-        'afterbegin',
-        `
-      <a href="#${el.id}" class="recipe__card">
-          <img src="${el.image_url}" alt="recipe" />
-          <p>${el.title}</p>
-          <span>${el.publisher}</span>
-      </a>
-      `
-      );
+    state.search.results = data.data.recipes.map((rec) => {
+      return {
+        id: rec.id,
+        title: rec.title,
+        image: rec.image_url,
+        publisher: rec.publisher,
+      };
     });
+    console.log(state.search.results);
+    // const recContainer = document.querySelector('#recipe__content');
+    // data.data.recipes.splice(0, 9).map((el) => {
+    //   recContainer.insertAdjacentHTML(
+    //     'afterbegin',
+    //     `
+    //   <a href="#${el.id}" class="recipe__card">
+    //       <img src="${el.image_url}" alt="recipe" />
+    //       <p>${el.title}</p>
+    //       <span>${el.publisher}</span>
+    //   </a>
+    //   `
+    //   );
+    // });
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 };

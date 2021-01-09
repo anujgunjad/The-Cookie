@@ -974,7 +974,11 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var state = {
-  recipe: {}
+  recipe: {},
+  search: {
+    query: '',
+    results: []
+  }
 };
 exports.state = state;
 
@@ -1008,7 +1012,7 @@ var loadFullRecipe = /*#__PURE__*/function () {
           case 8:
             _context.prev = 8;
             _context.t0 = _context["catch"](0);
-            console.log(_context.t0);
+            throw _context.t0;
 
           case 11:
           case "end":
@@ -1027,40 +1031,54 @@ exports.loadFullRecipe = loadFullRecipe;
 
 var loadSearchResults = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(query) {
-    var res, data, recContainer;
+    var data;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.prev = 0;
-            _context2.next = 3;
-            return fetch("".concat(_config.API_URL, "?search=").concat(query, "&key=").concat(_config.KEY));
+            state.search.query = query;
+            _context2.next = 4;
+            return (0, _helper.getJSON)("".concat(_config.API_URL, "?search=").concat(query, "&key=").concat(_config.KEY));
 
-          case 3:
-            res = _context2.sent;
-            _context2.next = 6;
-            return res.json();
-
-          case 6:
+          case 4:
             data = _context2.sent;
-            recContainer = document.querySelector('#recipe__content');
-            data.data.recipes.splice(0, 9).map(function (el) {
-              recContainer.insertAdjacentHTML('afterbegin', "\n      <a href=\"#".concat(el.id, "\" class=\"recipe__card\">\n          <img src=\"").concat(el.image_url, "\" alt=\"recipe\" />\n          <p>").concat(el.title, "</p>\n          <span>").concat(el.publisher, "</span>\n      </a>\n      "));
+            state.search.results = data.data.recipes.map(function (rec) {
+              return {
+                id: rec.id,
+                title: rec.title,
+                image: rec.image_url,
+                publisher: rec.publisher
+              };
             });
-            _context2.next = 14;
+            console.log(state.search.results); // const recContainer = document.querySelector('#recipe__content');
+            // data.data.recipes.splice(0, 9).map((el) => {
+            //   recContainer.insertAdjacentHTML(
+            //     'afterbegin',
+            //     `
+            //   <a href="#${el.id}" class="recipe__card">
+            //       <img src="${el.image_url}" alt="recipe" />
+            //       <p>${el.title}</p>
+            //       <span>${el.publisher}</span>
+            //   </a>
+            //   `
+            //   );
+            // });
+
+            _context2.next = 12;
             break;
 
-          case 11:
-            _context2.prev = 11;
+          case 9:
+            _context2.prev = 9;
             _context2.t0 = _context2["catch"](0);
-            console.log(_context2.t0);
+            throw _context2.t0;
 
-          case 14:
+          case 12:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 11]]);
+    }, _callee2, null, [[0, 9]]);
   }));
 
   return function loadSearchResults(_x2) {
@@ -1148,6 +1166,7 @@ var View = /*#__PURE__*/function () {
   _createClass(View, [{
     key: "render",
     value: function render(data) {
+      if (!data || Array.isArray(data) && data.length === 0) return this.renderError('No Recipes Found!');
       this._data = data;
 
       var markup = this._generateMarkup();
@@ -1165,7 +1184,8 @@ var View = /*#__PURE__*/function () {
     key: "renderSpinner",
     value: function renderSpinner() {
       var markup = "\n      <div class=\"lds-default\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>\n    ";
-      this._parentElement.innerHTML = ' ';
+
+      this._clear();
 
       this._parentElement.insertAdjacentHTML('afterbegin', markup);
     }
@@ -1173,6 +1193,10 @@ var View = /*#__PURE__*/function () {
     key: "renderError",
     value: function renderError(message) {
       var markup = "\n      <div class=\"full__view__recipe_error\">\n        <span class=\"iconify\"  style=\"color: #EF4746; font-size: 30px;  padding-right: 5px\" data-icon=\"bx:bxs-error-alt\" data-inline=\"false\"></span>\n        <h style=\"font-family: 'Montserrat', sans-serif;\">".concat(message, "</h>\n      </div>\n    ");
+
+      this._clear();
+
+      this._parentElement.insertAdjacentHTML('afterbegin', markup);
     }
   }, {
     key: "addHandlerRender",
@@ -1275,6 +1299,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
@@ -1312,6 +1340,18 @@ var ResultView = /*#__PURE__*/function (_View) {
     return _this;
   }
 
+  _createClass(ResultView, [{
+    key: "_generateMarkup",
+    value: function _generateMarkup() {
+      return this._data.map(this._generateMarkupPreview).join(' ');
+    }
+  }, {
+    key: "_generateMarkupPreview",
+    value: function _generateMarkupPreview(result) {
+      return "\n    <a href=\"#".concat(result.id, "\" class=\"recipe__card\">\n      <img src=\"").concat(result.image, "\"  alt=\"recipe\" />\n      <p>").concat(result.title, "</p>\n      <span>").concat(result.publisher, "</span>\n   </a>\n  ");
+    }
+  }]);
+
   return ResultView;
 }(_View2.default);
 
@@ -1348,10 +1388,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var fullViewRecipeContainer = document.querySelector('#full__view__recipe');
 
 var controlInitialState = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
             try {
               (function () {
@@ -1359,13 +1399,31 @@ var controlInitialState = /*#__PURE__*/function () {
                 var sideEle = Array('pizza', 'ice creame', 'burger', 'barbeque');
 
                 var _loop = function _loop(i) {
-                  sideCardBtn[i].addEventListener('click', function () {
-                    //Load Recipe
-                    model.loadSearchResults(sideEle[i]);
-                    var curActive = document.getElementsByClassName('card_active');
-                    curActive[0].className = curActive[0].className.replace(' card_active', ' ');
-                    this.className += ' card_active';
-                  });
+                  sideCardBtn[i].addEventListener('click', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                    var curActive;
+                    return regeneratorRuntime.wrap(function _callee$(_context) {
+                      while (1) {
+                        switch (_context.prev = _context.next) {
+                          case 0:
+                            console.log(sideCardBtn); //Load Recipe
+
+                            _context.next = 3;
+                            return model.loadSearchResults(sideEle[i]);
+
+                          case 3:
+                            _resultsView.default.render(model.state.search.results);
+
+                            curActive = document.getElementsByClassName('card_active');
+                            curActive[0].className = curActive[0].className.replace(' card_active', ' ');
+                            this.className += ' card_active';
+
+                          case 7:
+                          case "end":
+                            return _context.stop();
+                        }
+                      }
+                    }, _callee, this);
+                  })));
                 };
 
                 for (var i = 0; i < sideCardBtn.length; i++) {
@@ -1376,14 +1434,18 @@ var controlInitialState = /*#__PURE__*/function () {
               console.log(err);
             }
 
-            model.loadSearchResults('pizza');
+            _context2.next = 3;
+            return model.loadSearchResults('pizza');
 
-          case 2:
+          case 3:
+            _resultsView.default.render(model.state.search.results);
+
+          case 4:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee);
+    }, _callee2);
   }));
 
   return function controlInitialState() {
@@ -1392,90 +1454,104 @@ var controlInitialState = /*#__PURE__*/function () {
 }();
 
 var controlFullRecipe = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
     var id;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            _context2.prev = 0;
+            _context3.prev = 0;
             id = window.location.hash.slice(1);
 
             if (id) {
-              _context2.next = 4;
+              _context3.next = 4;
               break;
             }
 
-            return _context2.abrupt("return");
+            return _context3.abrupt("return");
 
           case 4:
             _recipeView.default.renderSpinner(); //1. Loading Recipe
 
 
-            _context2.next = 7;
+            _context3.next = 7;
             return model.loadFullRecipe(id);
 
           case 7:
             //2. render recipe
             _recipeView.default.render(model.state.recipe);
 
-            _context2.next = 13;
+            _context3.next = 13;
             break;
 
           case 10:
-            _context2.prev = 10;
-            _context2.t0 = _context2["catch"](0);
-            console.log(_context2.t0);
+            _context3.prev = 10;
+            _context3.t0 = _context3["catch"](0);
+
+            _recipeView.default.renderError("Recipe not found. Please try another one!");
 
           case 13:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee2, null, [[0, 10]]);
-  }));
-
-  return function controlFullRecipe() {
-    return _ref2.apply(this, arguments);
-  };
-}();
-
-var controlSearchResults = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-    var query;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            _context3.prev = 0;
-
-            _resultsView.default.renderSpinner(); // 1) Get search query
-
-
-            query = _searchView.default.getQuery(); // 2) Load search results
-
-            _context3.next = 5;
-            return model.loadSearchResults(query);
-
-          case 5:
-            _context3.next = 10;
-            break;
-
-          case 7:
-            _context3.prev = 7;
-            _context3.t0 = _context3["catch"](0);
-            console.log(_context3.t0);
-
-          case 10:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[0, 7]]);
+    }, _callee3, null, [[0, 10]]);
+  }));
+
+  return function controlFullRecipe() {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+var controlSearchResults = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+    var query;
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+
+            _resultsView.default.renderSpinner(); // 1) Get search query
+
+
+            query = _searchView.default.getQuery();
+
+            if (query) {
+              _context4.next = 5;
+              break;
+            }
+
+            return _context4.abrupt("return");
+
+          case 5:
+            _context4.next = 7;
+            return model.loadSearchResults(query);
+
+          case 7:
+            //3) Render results
+            console.log(model.state.search.results);
+
+            _resultsView.default.render(model.state.search.results);
+
+            _context4.next = 14;
+            break;
+
+          case 11:
+            _context4.prev = 11;
+            _context4.t0 = _context4["catch"](0);
+            console.log(_context4.t0);
+
+          case 14:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, null, [[0, 11]]);
   }));
 
   return function controlSearchResults() {
-    return _ref3.apply(this, arguments);
+    return _ref4.apply(this, arguments);
   };
 }();
 
