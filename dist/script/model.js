@@ -1,4 +1,4 @@
-import { API_URL, KEY } from './config';
+import { API_URL, KEY, RES_PER_PAGE } from './config';
 import 'regenerator-runtime/runtime';
 import { async } from 'regenerator-runtime';
 import { getJSON } from './helper';
@@ -7,7 +7,9 @@ export const state = {
   recipe: {},
   search: {
     query: '',
+    page: 1,
     results: [],
+    resultsPerPage: RES_PER_PAGE,
   },
 };
 
@@ -46,20 +48,14 @@ export const loadSearchResults = async function (query) {
       };
     });
     console.log(state.search.results);
-    // const recContainer = document.querySelector('#recipe__content');
-    // data.data.recipes.splice(0, 9).map((el) => {
-    //   recContainer.insertAdjacentHTML(
-    //     'afterbegin',
-    //     `
-    //   <a href="#${el.id}" class="recipe__card">
-    //       <img src="${el.image_url}" alt="recipe" />
-    //       <p>${el.title}</p>
-    //       <span>${el.publisher}</span>
-    //   </a>
-    //   `
-    //   );
-    // });
   } catch (err) {
     throw err;
   }
+};
+
+export const searchResultPage = (page = state.search.page) => {
+  state.search.page = page;
+  const start = (page - 1) * state.search.resultsPerPage;
+  const end = page * state.search.resultsPerPage;
+  return state.search.results.slice(start, end);
 };

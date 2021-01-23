@@ -3,21 +3,23 @@ export default class View {
   render(data) {
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError('No Recipes Found!');
-
     this._data = data;
     const markup = this._generateMarkup();
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
-
   _clear() {
     this._parentElement.innerHTML = '';
   }
 
   renderSpinner() {
     const markup = `
-      <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      <div class="lds-default" style="padding: 30px"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     `;
+    console.log(this._parentElement.id);
+    if (this._parentElement.id === 'recipe__list') {
+      this._pageElement.innerHTML = '';
+    }
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }

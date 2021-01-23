@@ -193,27 +193,7 @@ header .menu {
   left: 0;
   height: 100vh;
   background-color: #f7f7f7;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.page__btn {
-  padding: 10px;
-  margin: 20px;
-  background-color: #fc4646;
-  border: none;
-  color: white;
-  width: 130px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-#full__view__recipe {
-  padding: 100px 0px 0px 0px;
-  top: 0;
-  left: 0;
-  position: relative;
+  text-align: center;
 }
 
 .recipe__card {
@@ -242,6 +222,29 @@ header .menu {
   font-size: 14px;
   font-weight: 600;
   color: #fc4646;
+}
+
+#recipe__list {
+  text-align: left !important;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.page__btn {
+  padding: 10px;
+  margin: 20px;
+  background-color: #fc4646;
+  border: none;
+  color: white;
+  width: 130px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#full__view__recipe {
+  padding: 100px 0px 0px 0px;
+  position: relative;
 }
 
 .full__recipe__image {
@@ -354,7 +357,7 @@ header .menu {
 
 .recipe__ingredients__list li {
   padding: 10px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'PT Sans', sans-serif;
   display: flex;
   background-color: rgb(255, 255, 255);
 }

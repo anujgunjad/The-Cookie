@@ -879,7 +879,7 @@ var API_URL = 'https://forkify-api.herokuapp.com/api/v2/recipes/';
 exports.API_URL = API_URL;
 var TIMEOUT_SEC = 10;
 exports.TIMEOUT_SEC = TIMEOUT_SEC;
-var RES_PER_PAGE = 10;
+var RES_PER_PAGE = 9;
 exports.RES_PER_PAGE = RES_PER_PAGE;
 var KEY = '2733780f-d08a-4103-a187-f2423cd92ad5';
 exports.KEY = KEY;
@@ -959,7 +959,7 @@ exports.getJSON = getJSON;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadSearchResults = exports.loadFullRecipe = exports.state = void 0;
+exports.searchResultPage = exports.loadSearchResults = exports.loadFullRecipe = exports.state = void 0;
 
 var _config = require("./config");
 
@@ -977,7 +977,9 @@ var state = {
   recipe: {},
   search: {
     query: '',
-    results: []
+    page: 1,
+    results: [],
+    resultsPerPage: _config.RES_PER_PAGE
   }
 };
 exports.state = state;
@@ -1051,20 +1053,7 @@ var loadSearchResults = /*#__PURE__*/function () {
                 publisher: rec.publisher
               };
             });
-            console.log(state.search.results); // const recContainer = document.querySelector('#recipe__content');
-            // data.data.recipes.splice(0, 9).map((el) => {
-            //   recContainer.insertAdjacentHTML(
-            //     'afterbegin',
-            //     `
-            //   <a href="#${el.id}" class="recipe__card">
-            //       <img src="${el.image_url}" alt="recipe" />
-            //       <p>${el.title}</p>
-            //       <span>${el.publisher}</span>
-            //   </a>
-            //   `
-            //   );
-            // });
-
+            console.log(state.search.results);
             _context2.next = 12;
             break;
 
@@ -1087,6 +1076,16 @@ var loadSearchResults = /*#__PURE__*/function () {
 }();
 
 exports.loadSearchResults = loadSearchResults;
+
+var searchResultPage = function searchResultPage() {
+  var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : state.search.page;
+  state.search.page = page;
+  var start = (page - 1) * state.search.resultsPerPage;
+  var end = page * state.search.resultsPerPage;
+  return state.search.results.slice(start, end);
+};
+
+exports.searchResultPage = searchResultPage;
 },{"./config":"dist/script/config.js","regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./helper":"dist/script/helper.js"}],"dist/script/views/searchView.js":[function(require,module,exports) {
 "use strict";
 
@@ -1183,7 +1182,12 @@ var View = /*#__PURE__*/function () {
   }, {
     key: "renderSpinner",
     value: function renderSpinner() {
-      var markup = "\n      <div class=\"lds-default\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>\n    ";
+      var markup = "\n      <div class=\"lds-default\" style=\"padding: 30px\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>\n    ";
+      console.log(this._parentElement.id);
+
+      if (this._parentElement.id === 'recipe__list') {
+        this._pageElement.innerHTML = '';
+      }
 
       this._clear();
 
@@ -1335,7 +1339,9 @@ var ResultView = /*#__PURE__*/function (_View) {
 
     _this = _super.call.apply(_super, [this].concat(args));
 
-    _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('#recipe__content'));
+    _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('#recipe__list'));
+
+    _defineProperty(_assertThisInitialized(_this), "_pageElement", document.querySelector('#pagination__btn__container'));
 
     return _this;
   }
@@ -1348,7 +1354,7 @@ var ResultView = /*#__PURE__*/function (_View) {
   }, {
     key: "_generateMarkupPreview",
     value: function _generateMarkupPreview(result) {
-      return "\n    <a href=\"#".concat(result.id, "\" class=\"recipe__card\">\n      <img src=\"").concat(result.image, "\"  alt=\"recipe\" />\n      <p>").concat(result.title, "</p>\n      <span>").concat(result.publisher, "</span>\n   </a>\n  ");
+      return "\n    <a href=\"#".concat(result.id, "\" class=\"recipe__card\">\n      <img src=\"").concat(result.image, "\"  alt=\"recipe\" />\n      <p>").concat(result.title.substring(0, 25), "...</p>\n      <span>").concat(result.publisher, "</span>\n   </a>\n  ");
     }
   }]);
 
@@ -1356,6 +1362,105 @@ var ResultView = /*#__PURE__*/function (_View) {
 }(_View2.default);
 
 var _default = new ResultView();
+
+exports.default = _default;
+},{"./View":"dist/script/views/View.js"}],"dist/script/views/paginationView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _View2 = _interopRequireDefault(require("./View"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var PaginationView = /*#__PURE__*/function (_View) {
+  _inherits(PaginationView, _View);
+
+  var _super = _createSuper(PaginationView);
+
+  function PaginationView() {
+    var _this;
+
+    _classCallCheck(this, PaginationView);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('#pagination__btn__container'));
+
+    return _this;
+  }
+
+  _createClass(PaginationView, [{
+    key: "addHandlerClick",
+    value: function addHandlerClick(handler) {
+      this._parentElement.addEventListener('click', function (e) {
+        var btn = e.target.closest('.page__btn');
+        var goToPage = btn.dataset.goto;
+        handler(goToPage);
+      });
+    }
+  }, {
+    key: "_generateMarkup",
+    value: function _generateMarkup() {
+      var curPage = this._data.page;
+      var numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
+      console.log(numPages);
+      console.log(curPage); // Page 1, and there are other pages
+
+      if (curPage == 1 && numPages > 1) {
+        return "\n      <button data-goto=\"".concat(parseInt(curPage) + parseInt(1), "\" class=\"page__btn\">Page ").concat(parseInt(curPage) + parseInt(1), "</button>\n      ");
+      } // Last Page
+
+
+      if (curPage == numPages && numPages > 1) {
+        return "\n        <button data-goto=\"".concat(parseInt(curPage) - parseInt(1), "\" class=\"page__btn\">Page ").concat(parseInt(curPage) - parseInt(1), "</button>\n      ");
+      } // Other Page
+
+
+      if (curPage < numPages) {
+        return "\n        <button data-goto=\"".concat(parseInt(curPage) - parseInt(1), "\" class=\"page__btn\">Page ").concat(parseInt(curPage) - parseInt(1), "</button>\n        <button  data-goto=\"").concat(parseInt(curPage) + parseInt(1), "\" class=\"page__btn\">Page ").concat(parseInt(curPage) + parseInt(1), "</button>\n      ");
+      } // Page 1, and there are no other pages
+
+
+      return '';
+    }
+  }]);
+
+  return PaginationView;
+}(_View2.default);
+
+var _default = new PaginationView();
 
 exports.default = _default;
 },{"./View":"dist/script/views/View.js"}],"dist/script/controller.js":[function(require,module,exports) {
@@ -1374,6 +1479,8 @@ var _recipeView = _interopRequireDefault(require("./views/recipeView.js"));
 var Config = _interopRequireWildcard(require("./config"));
 
 var _resultsView = _interopRequireDefault(require("./views/resultsView.js"));
+
+var _paginationView = _interopRequireDefault(require("./views/paginationView"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1396,7 +1503,7 @@ var controlInitialState = /*#__PURE__*/function () {
             try {
               (function () {
                 var sideCardBtn = document.querySelectorAll('.cat__card');
-                var sideEle = Array('pizza', 'ice creame', 'burger', 'barbeque');
+                var sideEle = Array('pizza', 'ice creame', 'burger', 'curry');
 
                 var _loop = function _loop(i) {
                   sideCardBtn[i].addEventListener('click', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -1405,19 +1512,25 @@ var controlInitialState = /*#__PURE__*/function () {
                       while (1) {
                         switch (_context.prev = _context.next) {
                           case 0:
-                            console.log(sideCardBtn); //Load Recipe
+                            //Loader
+                            _resultsView.default.renderSpinner(); //Load Recipe
+
 
                             _context.next = 3;
                             return model.loadSearchResults(sideEle[i]);
 
                           case 3:
-                            _resultsView.default.render(model.state.search.results);
+                            //Render Recipe
+                            _resultsView.default.render(model.searchResultPage()); //4) Render initial Pagination
+
+
+                            _paginationView.default.render(model.state.search);
 
                             curActive = document.getElementsByClassName('card_active');
                             curActive[0].className = curActive[0].className.replace(' card_active', ' ');
                             this.className += ' card_active';
 
-                          case 7:
+                          case 8:
                           case "end":
                             return _context.stop();
                         }
@@ -1432,15 +1545,23 @@ var controlInitialState = /*#__PURE__*/function () {
               })();
             } catch (err) {
               console.log(err);
-            }
+            } //Loader
 
-            _context2.next = 3;
+
+            _resultsView.default.renderSpinner(); //Load Recipe
+
+
+            _context2.next = 4;
             return model.loadSearchResults('pizza');
 
-          case 3:
-            _resultsView.default.render(model.state.search.results);
-
           case 4:
+            //Render Recipe
+            _resultsView.default.render(model.searchResultPage()); //Render initial Pagination
+
+
+            _paginationView.default.render(model.state.search);
+
+          case 6:
           case "end":
             return _context2.stop();
         }
@@ -1530,9 +1651,11 @@ var controlSearchResults = /*#__PURE__*/function () {
 
           case 7:
             //3) Render results
-            console.log(model.state.search.results);
+            // console.log(model.searchResultPage());
+            _resultsView.default.render(model.searchResultPage()); //4) Render initial Pagination
 
-            _resultsView.default.render(model.state.search.results);
+
+            _paginationView.default.render(model.state.search);
 
             _context4.next = 14;
             break;
@@ -1555,16 +1678,26 @@ var controlSearchResults = /*#__PURE__*/function () {
   };
 }();
 
+var controlPagination = function controlPagination(goToPage) {
+  //1) Render results
+  _resultsView.default.render(model.searchResultPage(goToPage)); //2) Render initial Pagination
+
+
+  _paginationView.default.render(model.state.search);
+};
+
 var init = function init() {
   controlInitialState();
 
   _searchView.default.addHandlerSearch(controlSearchResults);
 
   _recipeView.default.addHandlerRender(controlFullRecipe);
+
+  _paginationView.default.addHandlerClick(controlPagination);
 };
 
 init();
-},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./model":"dist/script/model.js","./views/searchView.js":"dist/script/views/searchView.js","./views/recipeView.js":"dist/script/views/recipeView.js","./config":"dist/script/config.js","./views/resultsView.js":"dist/script/views/resultsView.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./model":"dist/script/model.js","./views/searchView.js":"dist/script/views/searchView.js","./views/recipeView.js":"dist/script/views/recipeView.js","./config":"dist/script/config.js","./views/resultsView.js":"dist/script/views/resultsView.js","./views/paginationView":"dist/script/views/paginationView.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1592,7 +1725,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64627" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50321" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

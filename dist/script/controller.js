@@ -5,18 +5,23 @@ import searchView from './views/searchView.js';
 import recipeView from './views/recipeView.js';
 import * as Config from './config';
 import resultsView from './views/resultsView.js';
+import paginationView from './views/paginationView';
 let fullViewRecipeContainer = document.querySelector('#full__view__recipe');
 
 const controlInitialState = async function () {
   try {
     const sideCardBtn = document.querySelectorAll('.cat__card');
-    const sideEle = Array('pizza', 'ice creame', 'burger', 'barbeque');
+    const sideEle = Array('pizza', 'ice creame', 'burger', 'curry');
     for (let i = 0; i < sideCardBtn.length; i++) {
       sideCardBtn[i].addEventListener('click', async function () {
-        console.log(sideCardBtn);
+        //Loader
+        resultsView.renderSpinner();
         //Load Recipe
         await model.loadSearchResults(sideEle[i]);
-        resultsView.render(model.state.search.results);
+        //Render Recipe
+        resultsView.render(model.searchResultPage());
+        //4) Render initial Pagination
+        paginationView.render(model.state.search);
         let curActive = document.getElementsByClassName('card_active');
         curActive[0].className = curActive[0].className.replace(
           ' card_active',
@@ -28,8 +33,14 @@ const controlInitialState = async function () {
   } catch (err) {
     console.log(err);
   }
+  //Loader
+  resultsView.renderSpinner();
+  //Load Recipe
   await model.loadSearchResults('pizza');
-  resultsView.render(model.state.search.results);
+  //Render Recipe
+  resultsView.render(model.searchResultPage());
+  //Render initial Pagination
+  paginationView.render(model.state.search);
 };
 
 const controlFullRecipe = async function () {
@@ -57,16 +68,26 @@ const controlSearchResults = async () => {
     // 2) Load search results
     await model.loadSearchResults(query);
     //3) Render results
-    console.log(model.state.search.results);
-    resultsView.render(model.state.search.results);
+    // console.log(model.searchResultPage());
+    resultsView.render(model.searchResultPage());
+    //4) Render initial Pagination
+    paginationView.render(model.state.search);
   } catch (err) {
     console.log(err);
   }
+};
+
+const controlPagination = function (goToPage) {
+  //1) Render results
+  resultsView.render(model.searchResultPage(goToPage));
+  //2) Render initial Pagination
+  paginationView.render(model.state.search);
 };
 
 const init = () => {
   controlInitialState();
   searchView.addHandlerSearch(controlSearchResults);
   recipeView.addHandlerRender(controlFullRecipe);
+  paginationView.addHandlerClick(controlPagination);
 };
 init();
