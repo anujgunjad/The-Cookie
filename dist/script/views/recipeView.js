@@ -1,6 +1,17 @@
 import View from './View';
+import { Fraction } from 'fractional';
 class RecipeView extends View {
   _parentElement = document.querySelector('#full__view__recipe');
+
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn__tiny');
+      if (!btn) return;
+      const updateTo = btn.dataset.updateTo;
+      if (updateTo > 0) handler(updateTo);
+    });
+  }
+
   _generateMarkup() {
     return ` <img class = "full__recipe__image" src= ${this._data.image} alt=${
       this._data.title
@@ -16,8 +27,12 @@ class RecipeView extends View {
                 Total Time: ${this._data.cookingTime} Min 
               </p>
               <div class="serve__nav__btn">
-                <button ><span class="iconify" style="color: #EF4746; font-size: 22px"  data-icon="carbon:add-filled" data-inline="false"></span></button>
-                <button><span class="iconify"  style="color: #EF4746; font-size: 22px"  data-icon="ant-design:minus-circle-filled" data-inline="false"></span></button>
+                <button class="btn__tiny btn__increase" data-update-to="${
+                  parseFloat(this._data.servings) + 1
+                }"><span class="iconify" style="color: #EF4746; font-size: 22px"  data-icon="carbon:add-filled" data-inline="false"></span></button>
+                <button class="btn__tiny btn__decrease" data-update-to="${
+                  parseFloat(this._data.servings) - 1
+                }"><span class=" iconify"  style="color: #EF4746; font-size: 22px"  data-icon="ant-design:minus-circle-filled" data-inline="false"></span></button>
               </div>
               <p>
                 <span class="iconify" style="color: #EF4746; font-size: 27px;  padding-right: 5px" data-icon="foundation:laptop" data-inline="false"></span>
@@ -35,7 +50,9 @@ class RecipeView extends View {
                   return `
                 <li style="text-align: left;">
                   <!-- <span class="iconify"  style="color: #EF4746; margin-right: 5px;" data-icon="subway:tick" data-inline="false"></span> -->
-                  <span style="color: #EF4746; font-weight: bold; margin-right: 5px;">${ing.quantity}</span>
+                  <span style="color: #EF4746; font-weight: bold; margin-right: 5px;">${
+                    ing.quantity ? new Fraction(ing.quantity).toString() : ''
+                  }</span>
                   ${ing.description}
                 </li>
                 `;

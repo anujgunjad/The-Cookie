@@ -54,6 +54,9 @@ const controlFullRecipe = async function () {
 
     //2. render recipe
     recipeView.render(model.state.recipe);
+
+    // //3. TEST
+    // controlServings();
   } catch (err) {
     recipeView.renderError(`Recipe not found. Please try another one!`);
   }
@@ -84,9 +87,41 @@ const controlPagination = function (goToPage) {
   paginationView.render(model.state.search);
 };
 
+const controlServings = function (newServings) {
+  // Update the recipe servings (in state)
+  model.updateServings(newServings);
+  // Update the recipe view
+  // recipeView.render(model.state.recipe);
+  recipeView.update(model.state.recipe);
+};
+
+const controlToggle = function () {
+  const toggleActiveBtn = document.querySelector('.list__img__bookmark');
+  const toggleDeactivateBtn = document.querySelector('.toggle__close');
+  const toggleBar = document.querySelector('#toggle__bar');
+  const overlay = document.querySelector('.full__overflow');
+  toggleActiveBtn.addEventListener('click', function () {
+    toggleBar.style.width = '360px';
+    document.body.style.position = 'fixed';
+    overlay.style.display = 'block';
+  });
+  toggleDeactivateBtn.addEventListener('click', function () {
+    toggleBar.style.width = '0px';
+    document.body.style.position = '';
+    overlay.style.display = 'none';
+  });
+  overlay.addEventListener('click', function () {
+    toggleBar.style.width = '0px';
+    document.body.style.position = '';
+    overlay.style.display = 'none';
+  });
+};
+
 const init = () => {
   controlInitialState();
+  controlToggle();
   searchView.addHandlerSearch(controlSearchResults);
+  recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerRender(controlFullRecipe);
   paginationView.addHandlerClick(controlPagination);
 };

@@ -9,6 +9,7 @@
   "author": "Anuj",
   "license": "ISC",
   "dependencies": {
+    "fractional": "^1.0.0",
     "node-sass": "^4.14.1",
     "regenerator-runtime": "^0.13.7"
   },

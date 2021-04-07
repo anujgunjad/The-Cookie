@@ -6,11 +6,32 @@
 *:focus {
   outline: none;
 }
-
+html,
+body {
+  height: 100%;
+  min-height: 100% !important;
+}
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* make scrollbar transparent */
+}
 a {
   color: inherit;
   text-decoration: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.full__overflow {
+  display: none;
+  position: fixed; /* Sit on top of the page content */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+  z-index: 880;
 }
 
 header {
@@ -185,6 +206,44 @@ header .menu {
   font-size: 11px;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 600;
+}
+
+#toggle__bar {
+  position: absolute;
+  z-index: 881;
+  background-color: rgb(255, 255, 255);
+  overflow-x: hidden;
+  height: 100vh;
+  padding: 20px 0px 0px 0px;
+  width: 0px;
+  right: 0;
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+#toggle__bar ul {
+  list-style: none;
+  padding: 0px 10px;
+}
+
+.bookmark__recipe__container {
+  height: 80px;
+  width: 100%;
+  background-color: #ececec;
+  border-radius: 10px;
+}
+
+.toggle__close {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  background-image: linear-gradient(to right, #fa1d37, #ff6c56);
+  border: none;
+  width: 75px;
+  height: 36px;
+  margin: 20px 10px;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
 }
 
 #recipe__content {
