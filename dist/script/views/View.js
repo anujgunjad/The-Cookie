@@ -9,31 +9,31 @@ export default class View {
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
-  update(data) {
-    if (!data || (Array.isArray(data) && data.length === 0))
-      return this.renderError();
-    this._data = data;
-    const newMarkup = this._generateMarkup();
+  // update(data) {
+  //   if (!data || (Array.isArray(data) && data.length === 0))
+  //     return this.renderError();
+  //   this._data = data;
+  //   const newMarkup = this._generateMarkup();
 
-    const newDom = document.createRange().createContextualFragment(newMarkup);
-    const newElements = Array.from(newDom.querySelectorAll('*'));
-    const curElements = Array.from(this._parentElement.querySelectorAll('*'));
-    console.log(newElements);
-    console.log(curElements);
+  //   const newDom = document.createRange().createContextualFragment(newMarkup);
+  //   const newElements = Array.from(newDom.querySelectorAll('*'));
+  //   const curElements = Array.from(this._parentElement.querySelectorAll('*'));
+  //   console.log(newElements);
+  //   console.log(curElements);
 
-    newElements.forEach((newEl, i) => {
-      const curEl = curElements[i];
-      // console.log(curEl, newEl.isEqualNode(curEl));
+  //   newElements.forEach((newEl, i) => {
+  //     const curEl = curElements[i];
+  //     // console.log(curEl, newEl.isEqualNode(curEl));
 
-      // if (
-      //   !newEl.isEqualNode(curEl) &&
-      //   newEl.firstChild?.nodeValue.trim() !== ''
-      // ) {
-      //   console.log('^^', newEl.firstChild.nodeValue.trim());
-      //   curEl.textContent = newEl.textContent;
-      // }
-    });
-  }
+  //     // if (
+  //     //   !newEl.isEqualNode(curEl) &&
+  //     //   newEl.firstChild?.nodeValue.trim() !== ''
+  //     // ) {
+  //     //   console.log('^^', newEl.firstChild.nodeValue.trim());
+  //     //   curEl.textContent = newEl.textContent;
+  //     // }
+  //   });
+  // }
 
   _clear() {
     this._parentElement.innerHTML = '';
@@ -43,7 +43,6 @@ export default class View {
     const markup = `
       <div class="lds-default" style="padding: 30px"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     `;
-    console.log(this._parentElement.id);
     if (this._parentElement.id === 'recipe__list') {
       this._pageElement.innerHTML = '';
     }

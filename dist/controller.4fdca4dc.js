@@ -959,7 +959,7 @@ exports.getJSON = getJSON;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateServings = exports.searchResultPage = exports.loadSearchResults = exports.loadFullRecipe = exports.state = void 0;
+exports.deleteBookmark = exports.addBookmark = exports.updateServings = exports.searchResultPage = exports.loadSearchResults = exports.loadFullRecipe = exports.state = void 0;
 
 var _config = require("./config");
 
@@ -975,13 +975,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var state = {
   recipe: {},
-  bookmark: {},
   search: {
     query: '',
     page: 1,
     results: [],
     resultsPerPage: _config.RES_PER_PAGE
-  }
+  },
+  bookmark: []
 };
 exports.state = state;
 
@@ -1009,20 +1009,23 @@ var loadFullRecipe = /*#__PURE__*/function () {
               cookingTime: recipe.cooking_time,
               ingredients: recipe.ingredients
             };
-            _context.next = 11;
+            if (state.bookmark.some(function (bookmark) {
+              return bookmark.id === id;
+            })) state.recipe.bookmark = true;else state.recipe.bookmark = false;
+            _context.next = 12;
             break;
 
-          case 8:
-            _context.prev = 8;
+          case 9:
+            _context.prev = 9;
             _context.t0 = _context["catch"](0);
             throw _context.t0;
 
-          case 11:
+          case 12:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 8]]);
+    }, _callee, null, [[0, 9]]);
   }));
 
   return function loadFullRecipe(_x) {
@@ -1054,21 +1057,20 @@ var loadSearchResults = /*#__PURE__*/function () {
                 publisher: rec.publisher
               };
             });
-            console.log(state.search.results);
-            _context2.next = 12;
+            _context2.next = 11;
             break;
 
-          case 9:
-            _context2.prev = 9;
+          case 8:
+            _context2.prev = 8;
             _context2.t0 = _context2["catch"](0);
             throw _context2.t0;
 
-          case 12:
+          case 11:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 9]]);
+    }, _callee2, null, [[0, 8]]);
   }));
 
   return function loadSearchResults(_x2) {
@@ -1096,6 +1098,27 @@ var updateServings = function updateServings(newServings) {
 };
 
 exports.updateServings = updateServings;
+
+var addBookmark = function addBookmark(recipe) {
+  //Add Bookmark
+  state.bookmark.push(recipe); //Mark current recipe bookmarked
+
+  if (recipe.id === state.recipe.id) state.recipe.bookmark = true;
+};
+
+exports.addBookmark = addBookmark;
+
+var deleteBookmark = function deleteBookmark(id) {
+  //Delete bookmark
+  var index = state.bookmark.findIndex(function (el) {
+    return el.id === id;
+  });
+  state.bookmark.splice(index, 1); //Mark current recipe NOT bookmarked
+
+  if (id === state.recipe.id) state.recipe.bookmark = false;
+};
+
+exports.deleteBookmark = deleteBookmark;
 },{"./config":"dist/script/config.js","regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./helper":"dist/script/helper.js"}],"dist/script/views/searchView.js":[function(require,module,exports) {
 "use strict";
 
@@ -1183,31 +1206,29 @@ var View = /*#__PURE__*/function () {
       this._clear();
 
       this._parentElement.insertAdjacentHTML('afterbegin', markup);
-    }
-  }, {
-    key: "update",
-    value: function update(data) {
-      if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
-      this._data = data;
+    } // update(data) {
+    //   if (!data || (Array.isArray(data) && data.length === 0))
+    //     return this.renderError();
+    //   this._data = data;
+    //   const newMarkup = this._generateMarkup();
+    //   const newDom = document.createRange().createContextualFragment(newMarkup);
+    //   const newElements = Array.from(newDom.querySelectorAll('*'));
+    //   const curElements = Array.from(this._parentElement.querySelectorAll('*'));
+    //   console.log(newElements);
+    //   console.log(curElements);
+    //   newElements.forEach((newEl, i) => {
+    //     const curEl = curElements[i];
+    //     // console.log(curEl, newEl.isEqualNode(curEl));
+    //     // if (
+    //     //   !newEl.isEqualNode(curEl) &&
+    //     //   newEl.firstChild?.nodeValue.trim() !== ''
+    //     // ) {
+    //     //   console.log('^^', newEl.firstChild.nodeValue.trim());
+    //     //   curEl.textContent = newEl.textContent;
+    //     // }
+    //   });
+    // }
 
-      var newMarkup = this._generateMarkup();
-
-      var newDom = document.createRange().createContextualFragment(newMarkup);
-      var newElements = Array.from(newDom.querySelectorAll('*'));
-      var curElements = Array.from(this._parentElement.querySelectorAll('*'));
-      console.log(newElements);
-      console.log(curElements);
-      newElements.forEach(function (newEl, i) {
-        var curEl = curElements[i]; // console.log(curEl, newEl.isEqualNode(curEl));
-        // if (
-        //   !newEl.isEqualNode(curEl) &&
-        //   newEl.firstChild?.nodeValue.trim() !== ''
-        // ) {
-        //   console.log('^^', newEl.firstChild.nodeValue.trim());
-        //   curEl.textContent = newEl.textContent;
-        // }
-      });
-    }
   }, {
     key: "_clear",
     value: function _clear() {
@@ -1217,7 +1238,6 @@ var View = /*#__PURE__*/function () {
     key: "renderSpinner",
     value: function renderSpinner() {
       var markup = "\n      <div class=\"lds-default\" style=\"padding: 30px\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>\n    ";
-      console.log(this._parentElement.id);
 
       if (this._parentElement.id === 'recipe__list') {
         this._pageElement.innerHTML = '';
@@ -1688,9 +1708,18 @@ var RecipeView = /*#__PURE__*/function (_View) {
       });
     }
   }, {
+    key: "addHandlerBookmark",
+    value: function addHandlerBookmark(handler) {
+      this._parentElement.addEventListener('click', function (e) {
+        var btn = e.target.closest('.add__bookmark__btn');
+        if (!btn) return;
+        handler();
+      });
+    }
+  }, {
     key: "_generateMarkup",
     value: function _generateMarkup() {
-      return " <img class = \"full__recipe__image\" src= ".concat(this._data.image, " alt=").concat(this._data.title, "/> \n          <div class=\"image__overlay\">\n          \n            <div class=\"image__header__container\">\n              <h>").concat(this._data.title, "</h>\n            </div>\n            <div class=\"image__display__container\">\n              <p>\n                <span class=\"iconify\" style=\"color: #EF4746; font-size: 27px; padding-right: 5px\" data-icon=\"ant-design:clock-circle-outlined\" data-inline=\"false\"></span>\n                Total Time: ").concat(this._data.cookingTime, " Min \n              </p>\n              <div class=\"serve__nav__btn\">\n                <button class=\"btn__tiny btn__increase\" data-update-to=\"").concat(parseFloat(this._data.servings) + 1, "\"><span class=\"iconify\" style=\"color: #EF4746; font-size: 22px\"  data-icon=\"carbon:add-filled\" data-inline=\"false\"></span></button>\n                <button class=\"btn__tiny btn__decrease\" data-update-to=\"").concat(parseFloat(this._data.servings) - 1, "\"><span class=\" iconify\"  style=\"color: #EF4746; font-size: 22px\"  data-icon=\"ant-design:minus-circle-filled\" data-inline=\"false\"></span></button>\n              </div>\n              <p>\n                <span class=\"iconify\" style=\"color: #EF4746; font-size: 27px;  padding-right: 5px\" data-icon=\"foundation:laptop\" data-inline=\"false\"></span>\n                Yield: Serves ").concat(this._data.servings, "\n              </p>\n            </div>\n          </div>\n          <div class=\"bottom__Container\">\n            <button class= \"add__bookmark__btn\">ADD TO BOOKMARK</button>\n            <div class=\"recipe__ingredients\">\n              <h2 class=\"recipe__ingredients__heading\" style=\"margin-bottom: 15px;\">RECIPE INGREDIENTS </h2>\n              <ul class = \"recipe__ingredients__list\">\n              ").concat(this._data.ingredients.map(function (ing) {
+      return " <img class = \"full__recipe__image\" src= ".concat(this._data.image, " alt=").concat(this._data.title, "/> \n          <div class=\"image__overlay\">\n          \n            <div class=\"image__header__container\">\n              <h>").concat(this._data.title, "</h>\n            </div>\n            <div class=\"image__display__container\">\n              <p>\n                <span class=\"iconify\" style=\"color: #EF4746; font-size: 27px; padding-right: 5px\" data-icon=\"ant-design:clock-circle-outlined\" data-inline=\"false\"></span>\n                Total Time: ").concat(this._data.cookingTime, " Min \n              </p>\n              <div class=\"serve__nav__btn\">\n                <button class=\"btn__tiny btn__increase\" data-update-to=\"").concat(parseFloat(this._data.servings) + 1, "\"><span class=\"iconify\" style=\"color: #EF4746; font-size: 22px\"  data-icon=\"carbon:add-filled\" data-inline=\"false\"></span></button>\n                <button class=\"btn__tiny btn__decrease\" data-update-to=\"").concat(parseFloat(this._data.servings) - 1, "\"><span class=\" iconify\"  style=\"color: #EF4746; font-size: 22px\"  data-icon=\"ant-design:minus-circle-filled\" data-inline=\"false\"></span></button>\n              </div>\n              <p>\n                <span class=\"iconify\" style=\"color: #EF4746; font-size: 27px;  padding-right: 5px\" data-icon=\"foundation:laptop\" data-inline=\"false\"></span>\n                Yield: Serves ").concat(this._data.servings, "\n              </p>\n            </div>\n          </div>\n          <div class=\"bottom__Container\">\n            <button class= \"add__bookmark__btn\">").concat(this._data.bookmark ? 'ADDED SUCCESSFULLY' : 'ADD BOOKMARK', "</button>\n            <div class=\"recipe__ingredients\">\n              <h2 class=\"recipe__ingredients__heading\" style=\"margin-bottom: 15px;\">RECIPE INGREDIENTS </h2>\n              <ul class = \"recipe__ingredients__list\">\n              ").concat(this._data.ingredients.map(function (ing) {
         return "\n                <li style=\"text-align: left;\">\n                  <!-- <span class=\"iconify\"  style=\"color: #EF4746; margin-right: 5px;\" data-icon=\"subway:tick\" data-inline=\"false\"></span> -->\n                  <span style=\"color: #EF4746; font-weight: bold; margin-right: 5px;\">".concat(ing.quantity ? new _fractional.Fraction(ing.quantity).toString() : '', "</span>\n                  ").concat(ing.description, "\n                </li>\n                ");
       }).join(' '), "\n              \n              </ul>\n            </div>\n          </div>\n        </div>");
     }
@@ -1849,9 +1878,7 @@ var PaginationView = /*#__PURE__*/function (_View) {
     key: "_generateMarkup",
     value: function _generateMarkup() {
       var curPage = this._data.page;
-      var numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
-      console.log(numPages);
-      console.log(curPage); // Page 1, and there are other pages
+      var numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage); // Page 1, and there are other pages
 
       if (curPage == 1 && numPages > 1) {
         return "\n      <button data-goto=\"".concat(parseInt(curPage) + parseInt(1), "\" class=\"page__btn\">Page ").concat(parseInt(curPage) + parseInt(1), "</button>\n      ");
@@ -2106,9 +2133,9 @@ var controlPagination = function controlPagination(goToPage) {
 var controlServings = function controlServings(newServings) {
   // Update the recipe servings (in state)
   model.updateServings(newServings); // Update the recipe view
-  // recipeView.render(model.state.recipe);
 
-  _recipeView.default.update(model.state.recipe);
+  _recipeView.default.render(model.state.recipe); // recipeView.update(model.state.recipe);
+
 };
 
 var controlToggle = function controlToggle() {
@@ -2133,9 +2160,17 @@ var controlToggle = function controlToggle() {
   });
 };
 
+var controlAddBookmark = function controlAddBookmark() {
+  if (!model.state.recipe.bookmark) model.addBookmark(model.state.recipe);else model.deleteBookmark(model.state.recipe.id);
+
+  _recipeView.default.render(model.state.recipe);
+};
+
 var init = function init() {
   controlInitialState();
   controlToggle();
+
+  _recipeView.default.addHandlerBookmark(controlAddBookmark);
 
   _searchView.default.addHandlerSearch(controlSearchResults);
 

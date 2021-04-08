@@ -5,13 +5,13 @@ import { getJSON } from './helper';
 
 export const state = {
   recipe: {},
-  bookmark: {},
   search: {
     query: '',
     page: 1,
     results: [],
     resultsPerPage: RES_PER_PAGE,
   },
+  bookmark: [],
 };
 
 export const loadFullRecipe = async function (id) {
@@ -30,6 +30,9 @@ export const loadFullRecipe = async function (id) {
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients,
     };
+    if (state.bookmark.some((bookmark) => bookmark.id === id))
+      state.recipe.bookmark = true;
+    else state.recipe.bookmark = false;
   } catch (err) {
     throw err;
   }
@@ -48,7 +51,6 @@ export const loadSearchResults = async function (query) {
         publisher: rec.publisher,
       };
     });
-    console.log(state.search.results);
   } catch (err) {
     throw err;
   }
@@ -66,4 +68,19 @@ export const updateServings = function (newServings) {
     ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
   });
   state.recipe.servings = newServings;
+};
+
+export const addBookmark = (recipe) => {
+  //Add Bookmark
+  state.bookmark.push(recipe);
+  //Mark current recipe bookmarked
+  if (recipe.id === state.recipe.id) state.recipe.bookmark = true;
+};
+
+export const deleteBookmark = function (id) {
+  //Delete bookmark
+  const index = state.bookmark.findIndex((el) => el.id === id);
+  state.bookmark.splice(index, 1);
+  //Mark current recipe NOT bookmarked
+  if (id === state.recipe.id) state.recipe.bookmark = false;
 };

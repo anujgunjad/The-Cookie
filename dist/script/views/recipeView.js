@@ -12,6 +12,14 @@ class RecipeView extends View {
     });
   }
 
+  addHandlerBookmark(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.add__bookmark__btn');
+      if (!btn) return;
+      handler();
+    });
+  }
+
   _generateMarkup() {
     return ` <img class = "full__recipe__image" src= ${this._data.image} alt=${
       this._data.title
@@ -41,7 +49,9 @@ class RecipeView extends View {
             </div>
           </div>
           <div class="bottom__Container">
-            <button class= "add__bookmark__btn">ADD TO BOOKMARK</button>
+            <button class= "add__bookmark__btn">${
+              this._data.bookmark ? 'ADDED SUCCESSFULLY' : 'ADD BOOKMARK'
+            }</button>
             <div class="recipe__ingredients">
               <h2 class="recipe__ingredients__heading" style="margin-bottom: 15px;">RECIPE INGREDIENTS </h2>
               <ul class = "recipe__ingredients__list">
