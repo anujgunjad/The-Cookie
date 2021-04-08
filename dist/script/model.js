@@ -5,6 +5,7 @@ import { getJSON } from './helper';
 
 export const state = {
   recipe: {},
+  bookmark: {},
   search: {
     query: '',
     page: 1,

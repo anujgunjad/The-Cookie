@@ -32,7 +32,7 @@
         <div class="profile">
           <!-- <img src="./img/avatar.png" /> -->
           <button class="list__img" href="/"><span class="iconify" style="color: #EF4746; font-size: 36px" data-icon="bx:bx-add-to-queue" data-inline="false"></span> <span>ADD RECIPE</span></button>
-          <button class="list__img" href="/"><span class="iconify" style="color: #EF4746; font-size: 36px" data-icon="bi:bookmark" data-inline="false"></span> <span>BOOKMARK</span></button>
+          <button class="list__img__bookmark" href="/"><span class="iconify" style="color: #EF4746; font-size: 36px" data-icon="bi:bookmark" data-inline="false"></span> <span>BOOKMARK</span></button>
         </div>
       </nav>
     </header>
@@ -88,6 +88,20 @@
         </nav>
       </div>
 
+      <div id="toggle__bar">
+        <ul>
+          <li>
+            <div class="bookmark__recipe__container">
+              <!-- <img src="./img/recipe.jpg"> -->
+            </div>
+          </li>
+        </ul>
+        <button class="toggle__close">
+          <span class="iconify" style="font-size: 23px;" data-icon="eva:arrow-ios-forward-fill" data-inline="false"></span>
+          Close
+        </button>
+      </div>
+
       <!--Recipe card container-->
       <div id="recipe__content">
         <!--Loader-->
@@ -139,6 +153,9 @@
       </div>
     </div>
     <!--FOOTER-->
+    <div class="full__overflow">
+        
+    </div>
   </body>
   <script src="./dist/script/controller.js"></script>
   <script src="https://code.iconify.design/1/1.0.6/iconify.min.js"></script>
