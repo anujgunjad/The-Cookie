@@ -879,7 +879,7 @@ var API_URL = 'https://forkify-api.herokuapp.com/api/v2/recipes/';
 exports.API_URL = API_URL;
 var TIMEOUT_SEC = 10;
 exports.TIMEOUT_SEC = TIMEOUT_SEC;
-var RES_PER_PAGE = 9;
+var RES_PER_PAGE = 12;
 exports.RES_PER_PAGE = RES_PER_PAGE;
 var KEY = '2733780f-d08a-4103-a187-f2423cd92ad5';
 exports.KEY = KEY;
@@ -1099,11 +1099,16 @@ var updateServings = function updateServings(newServings) {
 
 exports.updateServings = updateServings;
 
+var persistBookmarks = function persistBookmarks() {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmark));
+};
+
 var addBookmark = function addBookmark(recipe) {
   //Add Bookmark
   state.bookmark.push(recipe); //Mark current recipe bookmarked
 
   if (recipe.id === state.recipe.id) state.recipe.bookmark = true;
+  persistBookmarks();
 };
 
 exports.addBookmark = addBookmark;
@@ -1116,9 +1121,17 @@ var deleteBookmark = function deleteBookmark(id) {
   state.bookmark.splice(index, 1); //Mark current recipe NOT bookmarked
 
   if (id === state.recipe.id) state.recipe.bookmark = false;
+  persistBookmarks();
 };
 
 exports.deleteBookmark = deleteBookmark;
+
+var init = function init() {
+  var storage = localStorage.getItem('bookmarks');
+  if (storage) state.bookmark = JSON.parse(storage);
+};
+
+init();
 },{"./config":"dist/script/config.js","regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./helper":"dist/script/helper.js"}],"dist/script/views/searchView.js":[function(require,module,exports) {
 "use strict";
 
@@ -1905,6 +1918,88 @@ var PaginationView = /*#__PURE__*/function (_View) {
 var _default = new PaginationView();
 
 exports.default = _default;
+},{"./View":"dist/script/views/View.js"}],"dist/script/views/bookmarkView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _View2 = _interopRequireDefault(require("./View"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var BookmarkView = /*#__PURE__*/function (_View) {
+  _inherits(BookmarkView, _View);
+
+  var _super = _createSuper(BookmarkView);
+
+  function BookmarkView() {
+    var _this;
+
+    _classCallCheck(this, BookmarkView);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('.bookmark__recipe__container__parent'));
+
+    _defineProperty(_assertThisInitialized(_this), "_errorMessage", 'No bookmarks yet');
+
+    return _this;
+  }
+
+  _createClass(BookmarkView, [{
+    key: "_generateMarkup",
+    value: function _generateMarkup() {
+      return this._data.map(this._generateMarkupPreview).join(' ');
+    }
+  }, {
+    key: "addHandlerRender",
+    value: function addHandlerRender(handler) {
+      window.addEventListener('load', handler);
+    }
+  }, {
+    key: "_generateMarkupPreview",
+    value: function _generateMarkupPreview(result) {
+      return "<li>\n           <a href=\"#".concat(result.id, "\">\n            <div class=\"bookmark__recipe__container\">\n              <div class=\"bookmark__img__container\">\n                <img src=\"").concat(result.image, "\">\n              </div>\n             \n              <div class= \"bookmark__text__container\" style=\" display: flex;width: 100%;flex-direction: column; justify-content: center;\">\n                <p style = \"display: block;\">").concat(result.title.substring(0, 25), "...</p>\n                <span>").concat(result.publisher, "</span>\n              </div>\n              \n            </div>\n            </a>\n          </li>\n  ");
+    }
+  }]);
+
+  return BookmarkView;
+}(_View2.default);
+
+var _default = new BookmarkView();
+
+exports.default = _default;
 },{"./View":"dist/script/views/View.js"}],"dist/script/controller.js":[function(require,module,exports) {
 "use strict";
 
@@ -1923,6 +2018,8 @@ var Config = _interopRequireWildcard(require("./config"));
 var _resultsView = _interopRequireDefault(require("./views/resultsView.js"));
 
 var _paginationView = _interopRequireDefault(require("./views/paginationView"));
+
+var _bookmarkView = _interopRequireDefault(require("./views/bookmarkView"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2161,14 +2258,24 @@ var controlToggle = function controlToggle() {
 };
 
 var controlAddBookmark = function controlAddBookmark() {
-  if (!model.state.recipe.bookmark) model.addBookmark(model.state.recipe);else model.deleteBookmark(model.state.recipe.id);
+  // Add/Remove Bookmark
+  if (!model.state.recipe.bookmark) model.addBookmark(model.state.recipe);else model.deleteBookmark(model.state.recipe.id); // Update Recipe View
 
-  _recipeView.default.render(model.state.recipe);
+  _recipeView.default.render(model.state.recipe); // Display Bookmarks
+
+
+  _bookmarkView.default.render(model.state.bookmark);
+};
+
+var controlBookmarks = function controlBookmarks() {
+  _bookmarkView.default.render(model.state.bookmark);
 };
 
 var init = function init() {
   controlInitialState();
   controlToggle();
+
+  _bookmarkView.default.addHandlerRender(controlBookmarks);
 
   _recipeView.default.addHandlerBookmark(controlAddBookmark);
 
@@ -2182,7 +2289,7 @@ var init = function init() {
 };
 
 init();
-},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./model":"dist/script/model.js","./views/searchView.js":"dist/script/views/searchView.js","./views/recipeView.js":"dist/script/views/recipeView.js","./config":"dist/script/config.js","./views/resultsView.js":"dist/script/views/resultsView.js","./views/paginationView":"dist/script/views/paginationView.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./model":"dist/script/model.js","./views/searchView.js":"dist/script/views/searchView.js","./views/recipeView.js":"dist/script/views/recipeView.js","./config":"dist/script/config.js","./views/resultsView.js":"dist/script/views/resultsView.js","./views/paginationView":"dist/script/views/paginationView.js","./views/bookmarkView":"dist/script/views/bookmarkView.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2210,7 +2317,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63298" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57390" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

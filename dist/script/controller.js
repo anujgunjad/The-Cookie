@@ -6,6 +6,7 @@ import recipeView from './views/recipeView.js';
 import * as Config from './config';
 import resultsView from './views/resultsView.js';
 import paginationView from './views/paginationView';
+import bookmarkView from './views/bookmarkView';
 let fullViewRecipeContainer = document.querySelector('#full__view__recipe');
 
 const controlInitialState = async function () {
@@ -101,6 +102,7 @@ const controlToggle = function () {
   const toggleDeactivateBtn = document.querySelector('.toggle__close');
   const toggleBar = document.querySelector('#toggle__bar');
   const overlay = document.querySelector('.full__overflow');
+
   toggleActiveBtn.addEventListener('click', function () {
     toggleBar.style.width = '360px';
     document.body.style.position = 'fixed';
@@ -119,14 +121,23 @@ const controlToggle = function () {
 };
 
 const controlAddBookmark = function () {
+  // Add/Remove Bookmark
   if (!model.state.recipe.bookmark) model.addBookmark(model.state.recipe);
   else model.deleteBookmark(model.state.recipe.id);
+  // Update Recipe View
   recipeView.render(model.state.recipe);
+  // Display Bookmarks
+  bookmarkView.render(model.state.bookmark);
+};
+
+const controlBookmarks = function () {
+  bookmarkView.render(model.state.bookmark);
 };
 
 const init = () => {
   controlInitialState();
   controlToggle();
+  bookmarkView.addHandlerRender(controlBookmarks);
   recipeView.addHandlerBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   recipeView.addHandlerUpdateServings(controlServings);
