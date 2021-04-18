@@ -1,8 +1,8 @@
 import { API_URL, KEY, RES_PER_PAGE } from './config';
 import 'regenerator-runtime/runtime';
 import { async } from 'regenerator-runtime';
+// import { getJSON, sendJSON } from './helper';
 import { getJSON, sendJSON } from './helper';
-
 export const state = {
   recipe: {},
   search: {
@@ -32,7 +32,7 @@ const createRecipeObject = function (data) {
 export const loadFullRecipe = async function (id) {
   try {
     const data = await getJSON(
-      `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`
+      `https://forkify-api.herokuapp.com/api/v2/recipes/${id}?key=${KEY}`
     );
     state.recipe = createRecipeObject(data);
 

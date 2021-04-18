@@ -903,7 +903,26 @@ var timeout = function timeout(s) {
       reject(new Error("Request took too long!"));
     }, s * 1000);
   });
-};
+}; // export const AJAX = async function (url, uploadData = undefined) {
+//   const fetchPro = uploadData
+//     ? fetch(url, {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(uploadData),
+//       })
+//     : fetch(url);
+//      try {
+//     const res = await Promise.race([fetch(url), timeout(10)]);
+//     const data = await res.json();
+//     if (!res.ok) throw new Error(`${data.message} (${res.status})`);
+//     return data;
+//   } catch (err) {
+//     throw err;
+//   }
+// };
+
 
 var getJSON = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url) {
@@ -1084,7 +1103,7 @@ var loadFullRecipe = /*#__PURE__*/function () {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return (0, _helper.getJSON)("https://forkify-api.herokuapp.com/api/v2/recipes/".concat(id));
+            return (0, _helper.getJSON)("https://forkify-api.herokuapp.com/api/v2/recipes/".concat(id, "?key=").concat(_config.KEY));
 
           case 3:
             data = _context.sent;
@@ -2560,28 +2579,30 @@ var controlUploadRecipe = /*#__PURE__*/function () {
             _addRecipeView.default.renderMessage(); // Render bookmark view
 
 
-            _bookmarkView.default.render(model.state.bookmarks); //close window
+            _bookmarkView.default.render(model.state.bookmarks); // Change ID in URL
 
+
+            window.history.pushState(null, '', "#".concat(model.state.recipe.id)); //close window
 
             setTimeout(function () {
               formContainer.style.display = 'none';
             }, 2500);
-            _context5.next = 16;
+            _context5.next = 17;
             break;
 
-          case 12:
-            _context5.prev = 12;
+          case 13:
+            _context5.prev = 13;
             _context5.t0 = _context5["catch"](1);
             console.error(_context5.t0);
 
             _addRecipeView.default.renderError(_context5.t0.message);
 
-          case 16:
+          case 17:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, null, [[1, 12]]);
+    }, _callee5, null, [[1, 13]]);
   }));
 
   return function controlUploadRecipe(_x) {

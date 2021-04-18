@@ -171,6 +171,10 @@ const controlUploadRecipe = async function (newRecipe) {
 
     // Render bookmark view
     bookmarkView.render(model.state.bookmarks);
+
+    // Change ID in URL
+    window.history.pushState(null, '', `#${model.state.recipe.id}`);
+
     //close window
     setTimeout(function () {
       formContainer.style.display = 'none';
