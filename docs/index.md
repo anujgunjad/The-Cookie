@@ -4,7 +4,7 @@ The Cookie Web Application is an open-source project build by using Advance Java
 
 The project might consist of several issues if you are interested to contribute, feel free to fork and generate a pull request.
 
-<img src="https://i.ibb.co/KNS15vj/Cookie.png" width="100%">
+<img src="https://i.ibb.co/ZB16Ddm/Cookie-Application.png" width="100%">
 
 
 
