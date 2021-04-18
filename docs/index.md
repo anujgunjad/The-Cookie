@@ -1,4 +1,4 @@
-## Welcome to Cookie Web Application
+## Welcome to The Cookie Web Application
 
 The Cookie Web Application is an open-source project build by using Advance Javascript Concepts and MVC Design patterns.
 
