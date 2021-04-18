@@ -1,5 +1,7 @@
-## Welcome to GitHub Pages
+## Welcome to Cookie Web Application
 
-You can use the [editor on GitHub](https://github.com/anujgunjad/cookie/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+The Cookie Web Application is an open-source project build by using Advance Javascript Concepts and MVC Design patterns.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The project might consist of several issues if you are interested to contribute, feel free to fork and generate a pull request.
+
+![alt text](https://i.ibb.co/KNS15vj/Cookie.png)
