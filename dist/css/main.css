@@ -6,11 +6,7 @@
 *:focus {
   outline: none;
 }
-html,
-body {
-  height: 100%;
-  min-height: 100% !important;
-}
+
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent; /* make scrollbar transparent */
@@ -533,6 +529,73 @@ header .menu {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.add__recipe__container {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  z-index: 999999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(53, 53, 53, 0.274);
+  backdrop-filter: blur(5px);
+}
+
+.add__recipe__container form {
+  width: 60vw;
+  height: 80vh;
+  transition: all 0.5s;
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem 6rem;
+  padding: 1rem;
+}
+.add__recipe__container form .upload__column {
+  display: grid;
+  grid-template-columns: 1fr 2.8fr;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.add__recipe__container form .upload__column label {
+  font-family: 'PT Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+.add__recipe__container form .upload__column input {
+  font-family: 'PT Sans', sans-serif;
+  font-size: 0.8rem;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.upload__heading {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  grid-column: 1/-1;
+}
+
+.upload__btn {
+  grid-column: 1 / -1;
+  justify-self: center;
+  font-family: 'Montserrat', sans-serif;
+  width: 10rem;
+  cursor: pointer;
+  background-image: linear-gradient(to right, #fa1d37, #ff6c56);
+  border: none;
+  border-radius: 50px;
+  color: white;
 }
 
 @keyframes lds-default {

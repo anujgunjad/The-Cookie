@@ -1,7 +1,7 @@
 import { API_URL, KEY, RES_PER_PAGE } from './config';
 import 'regenerator-runtime/runtime';
 import { async } from 'regenerator-runtime';
-import { getJSON } from './helper';
+import { getJSON, sendJSON } from './helper';
 
 export const state = {
   recipe: {},
@@ -14,22 +14,28 @@ export const state = {
   bookmark: [],
 };
 
+const createRecipeObject = function (data) {
+  const { recipe } = data.data;
+  return {
+    id: recipe.id,
+    title: recipe.title,
+    publisher: recipe.publisher,
+    sourceUrl: recipe.source_url,
+    image: recipe.image_url,
+    servings: recipe.servings,
+    cookingTime: recipe.cooking_time,
+    ingredients: recipe.ingredients,
+    ...(recipe.key && { key: recipe.key }),
+  };
+};
+
 export const loadFullRecipe = async function (id) {
   try {
     const data = await getJSON(
       `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`
     );
-    const { recipe } = data.data;
-    state.recipe = {
-      id: recipe.id,
-      title: recipe.title,
-      publisher: recipe.publisher,
-      sourceUrl: recipe.source_url,
-      image: recipe.image_url,
-      servings: recipe.servings,
-      cookingTime: recipe.cooking_time,
-      ingredients: recipe.ingredients,
-    };
+    state.recipe = createRecipeObject(data);
+
     if (state.bookmark.some((bookmark) => bookmark.id === id))
       state.recipe.bookmark = true;
     else state.recipe.bookmark = false;
@@ -97,3 +103,36 @@ const init = function () {
 };
 
 init();
+
+export const uploadRecipe = async function (newRecipe) {
+  try {
+    const ingredients = Object.entries(newRecipe)
+      .filter((entry) => entry[0].startsWith('ingredient') && entry[1] !== '')
+      .map((ing) => {
+        const ingArr = ing[1].replaceAll(' ', '').split(',');
+        if (ingArr.length !== 3)
+          throw new Error(
+            'Wrong ingredient format! Please use the correct format'
+          );
+        const [quantity, unit, description] = ingArr;
+        return { quantity: quantity ? +quantity : null, unit, description };
+      });
+
+    const recipe = {
+      title: newRecipe.title,
+      source_url: newRecipe.sourceUrl,
+      image_url: newRecipe.image,
+      publisher: newRecipe.publisher,
+      cooking_time: +newRecipe.cookingTime,
+      servings: +newRecipe.servings,
+      ingredients,
+    };
+    const data = await sendJSON(`${API_URL}?key=${KEY}`, recipe);
+    state.recipe = createRecipeObject(data);
+
+    addBookmark(state.recipe);
+    console.log(state.recipe);
+  } catch (err) {
+    throw err;
+  }
+};

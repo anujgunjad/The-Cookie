@@ -7,6 +7,7 @@ import * as Config from './config';
 import resultsView from './views/resultsView.js';
 import paginationView from './views/paginationView';
 import bookmarkView from './views/bookmarkView';
+import addRecipeView from './views/addRecipeView';
 let fullViewRecipeContainer = document.querySelector('#full__view__recipe');
 
 const controlInitialState = async function () {
@@ -134,9 +135,57 @@ const controlBookmarks = function () {
   bookmarkView.render(model.state.bookmark);
 };
 
+const controlAddRecipe = function () {
+  const formContainer = document.querySelector('.add__recipe__form')
+    .parentElement;
+  const recipeAddBtn = document.querySelector('.list__img');
+
+  recipeAddBtn.addEventListener('click', function () {
+    formContainer.style.display = 'flex';
+  });
+
+  formContainer.addEventListener('click', function (e) {
+    if (e.target !== this) {
+      return;
+    }
+    formContainer.style.display = 'none';
+  });
+};
+
+const controlUploadRecipe = async function (newRecipe) {
+  const formContainer = document.querySelector('.add__recipe__form')
+    .parentElement;
+  try {
+    // Show loading spinner
+    addRecipeView.renderSpinner();
+
+    // Upload the new recipe data
+    await model.uploadRecipe(newRecipe);
+    console.log(model.state.recipe);
+
+    // Render recipe
+    recipeView.render(model.state.recipe);
+
+    // Success message
+    addRecipeView.renderMessage();
+
+    // Render bookmark view
+    bookmarkView.render(model.state.bookmarks);
+    //close window
+    setTimeout(function () {
+      formContainer.style.display = 'none';
+    }, 2500);
+  } catch (err) {
+    console.error(err);
+    addRecipeView.renderError(err.message);
+  }
+};
+
 const init = () => {
   controlInitialState();
   controlToggle();
+  controlAddRecipe();
+  addRecipeView.addHandlerUpload(controlUploadRecipe);
   bookmarkView.addHandlerRender(controlBookmarks);
   recipeView.addHandlerBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);

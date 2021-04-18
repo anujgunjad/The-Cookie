@@ -66,4 +66,16 @@ export default class View {
       window.addEventListener(ev, handler);
     });
   }
+  renderMessage(message = this._message) {
+    const markup = `
+      <div class="full__view__recipe_error">
+        
+        <span class="iconify"  style="color: #EF4746; font-size: 30px;  padding-right: 5px" data-icon="clarity:success-standard-solid" data-inline="false"></span>
+        <h style="font-family: 'Montserrat', sans-serif;">${message}</h>
+
+      </div>
+    `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
 }
